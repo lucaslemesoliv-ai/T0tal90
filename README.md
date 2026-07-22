@@ -1,11 +1,55 @@
+// Service Worker para o PWA T0tal90
+const CACHE_NAME = 't0tal90-cache-v2';
+const urlsToCache = [
+  './',
+  './index.html',
+  './manifest.json',
+  './launchericon-192x192.png',
+  './launchericon-512x512.png'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetch(event.request)
+      .catch(() => {
+        return caches.match(event.request);
+      })
+  );
+});
+```
+eof
+
+```html:Dashboard Financeiro Estilo 90 Pro:index.html
 <!DOCTYPE html>
 <html lang="pt-br" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T0tal90 - Dashboard Financeiro Autônomo</title>
-    <!-- PWA Manifest via Data URI para arquivo único perfeito -->
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22background_color%22%3A%22%23050505%22%2C%22description%22%3A%22T0tal90%20-%20Dashboard%20Financeiro%20Aut%C3%B4nomo%22%2C%22dir%22%3A%22ltr%22%2C%22display%22%3A%22standalone%22%2C%22name%22%3A%22T0tal90%22%2C%22orientation%22%3A%22any%22%2C%22scope%22%3A%22%2F%22%2C%22start_url%22%3A%22https%3A%2F%2Flucaslemesoliv-ai.github.io%2FT0tal90%2F%22%2C%22short_name%22%3A%22T0tal90%22%2C%22theme_color%22%3A%22%23050505%22%7D">
+    <!-- PWA Manifest Físico para validação perfeita no PWABuilder -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -310,17 +354,12 @@
     </div>
 
     <script>
-        // Registro automático de Service Worker para PWA Offline via Blob
+        // Registro automático de Service Worker para PWA Offline com suporte a cache
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                const swCode = `
-                    self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
-                    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-                `;
-                const blob = new Blob([swCode], { type: 'text/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Error:', err));
+                navigator.serviceWorker.register('./pwabuilder-sw.js')
+                    .then(reg => console.log('Service Worker registrado:', reg))
+                    .catch(err => console.log('Erro SW:', err));
             });
         }
 
@@ -620,7 +659,6 @@
             initMainChart();
         }
 
-        // --- AUTOMATED MARKET & FIAT CURRENCIES ---
         async function buscarFiatMoedas() {
             try {
                 const res = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,CNY-BRL');
@@ -660,7 +698,6 @@
             }
         }
 
-        // --- MULTI-NEWSPAPER AUTOMATED RADAR ---
         function renderizarSeletorNoticias() {
             const selector = document.getElementById('fontes-selector');
             selector.innerHTML = FONTES_NOTICIAS_DISPONIVEIS.map(f => {
@@ -676,7 +713,7 @@
 
         function toggleFonte(id) {
             if(fontesAtivas.includes(id)) {
-                if(fontesAtivas.length === 1) return; // Mantém pelo menos 1
+                if(fontesAtivas.length === 1) return;
                 fontesAtivas = fontesAtivas.filter(f => f !== id);
             } else {
                 fontesAtivas.push(id);
