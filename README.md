@@ -1,9 +1,14 @@
-
+<!DOCTYPE html>
 <html lang="pt-br" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Financeiro Estilo 90 - Autonomia Total</title>
+    <title>T0tal90 - Dashboard Financeiro Autônomo</title>
+    <!-- PWA Manifest via Data URI para arquivo único perfeito -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22background_color%22%3A%22%23050505%22%2C%22description%22%3A%22T0tal90%20-%20Dashboard%20Financeiro%20Aut%C3%B4nomo%22%2C%22dir%22%3A%22ltr%22%2C%22display%22%3A%22standalone%22%2C%22name%22%3A%22T0tal90%22%2C%22orientation%22%3A%22any%22%2C%22scope%22%3A%22%2F%22%2C%22start_url%22%3A%22https%3A%2F%2Flucaslemesoliv-ai.github.io%2FT0tal90%2F%22%2C%22short_name%22%3A%22T0tal90%22%2C%22theme_color%22%3A%22%23050505%22%7D">
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
@@ -264,7 +269,7 @@
         <section id="sec-noticias" class="hidden space-y-6">
             <div class="neo-card p-6">
                 <h3 class="font-black text-white text-base mb-1">Radar de Notícias Econômicas & Jornais</h3>
-                <p class="text-xs text-zinc-400 mb-4">Selecione abaixo quais jornais você deseja acompanhar no seu feed automatizado:</p>
+                <p class="text-xs text-zinc-400 mb-4">Selecione abaixo quais jornais você deseja acompanhar no seu feed automatizado (32 Portais Livres):</p>
                 <div class="flex flex-wrap gap-2 mb-6" id="fontes-selector"></div>
                 <div id="noticias-container" class="space-y-3">
                     <div class="text-center py-8 text-zinc-500 text-sm animate-pulse">Carregando feed de notícias multicanal...</div>
@@ -305,6 +310,20 @@
     </div>
 
     <script>
+        // Registro automático de Service Worker para PWA Offline via Blob
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+                    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+                `;
+                const blob = new Blob([swCode], { type: 'text/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Error:', err));
+            });
+        }
+
         const DICAS_FINANCEIRAS = [
             { titulo: "A Parcimônia e o Capital", categoria: "ADAM SMITH", texto: "O capital não aumenta pelo trabalho, mas pela parcimônia. Sem economia, a riqueza gerada evapora.", acao: "Separe uma porcentagem fixa antes de pagar os boletos." },
             { titulo: "O Controle do Centro", categoria: "ESTRATÉGIA APLICADA", texto: "No xadrez, dominar o centro dita o ritmo. Nas finanças, sua taxa de poupança é o centro. Quem poupa, ataca.", acao: "Sua margem livre permite ditar o jogo ou você só reage aos boletos?" },
@@ -572,6 +591,7 @@
             });
         }
 
+        let indiceDicaAtual = 0;
         function mudarDica(direcao) {
             indiceDicaAtual = (indiceDicaAtual + direcao + DICAS_FINANCEIRAS.length) % DICAS_FINANCEIRAS.length;
             const d = DICAS_FINANCEIRAS[indiceDicaAtual];
@@ -752,7 +772,6 @@
             renderParcelas();
             renderInvestimentos();
             initMainChart();
-            // Auto update market values in background
             buscarDadosMercado();
             buscarFiatMoedas();
         };
