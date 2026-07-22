@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "description": "T0tal90",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "T0tal90",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "T0tal90",
+  "start_url": "https://lucaslemesoliv-ai.github.io/T0tal90/",
+  "theme_color": "#ffffff"
+}
