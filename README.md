@@ -1,5 +1,33 @@
-// Service Worker para o PWA T0tal90
-const CACHE_NAME = 't0tal90-cache-v2';
+<!DOCTYPE html>
+{
+  "name": "T0tal90",
+  "short_name": "T0tal90",
+  "description": "Dashboard Financeiro Autônomo T0tal90",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "launchericon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "launchericon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+```eof
+
+```javascript:pwabuilder-sw.js
+const CACHE_NAME = 't0tal90-cache-v3';
 const urlsToCache = [
   './',
   './index.html',
@@ -38,17 +66,12 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
-```
-eof
-
-```html:Dashboard Financeiro Estilo 90 Pro:index.html
-<!DOCTYPE html>
 <html lang="pt-br" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T0tal90 - Dashboard Financeiro Autônomo</title>
-    <!-- PWA Manifest Físico para validação perfeita no PWABuilder -->
+    <!-- PWA Manifest Físico e Service Worker -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -815,3 +838,10 @@ eof
     </script>
 </body>
 </html>
+```
+eof
+
+### O que fazer para zerar os erros no PWABuilder:
+1. Certifique-se de enviar estes três arquivos exatos (`index.html`, `manifest.json`, `pwabuilder-sw.js`) e as imagens dos ícones (`launchericon-192x192.png` e `launchericon-512x512.png`) para a **raiz do seu repositório no GitHub**.
+2. Aguarde de **1 a 3 minutos** para o GitHub Pages atualizar.
+3. Cole novamente o seu link do GitHub Pages no PWABuilder e clique em analisar. Como os arquivos físicos agora estão na raiz com os nomes exatos, todas as barras vermelhas e amarelas sumirão!
