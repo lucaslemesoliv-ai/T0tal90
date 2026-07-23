@@ -4,45 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T0tal90 - Dashboard Financeiro Autônomo</title>
+    
+    <!-- Configurações PWA Obrigatórias -->
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Injeção Automática do Manifesto PWA (Garante zero erros de extensão) -->
-    <script>
-        const manifest = {
-            "name": "T0tal90",
-            "short_name": "T0tal90",
-            "description": "Dashboard Financeiro Autônomo T0tal90",
-            "start_url": "./index.html",
-            "scope": "./",
-            "display": "standalone",
-            "background_color": "#050505",
-            "theme_color": "#050505",
-            "orientation": "any",
-            "icons": [
-                {
-                    "src": "launchericon-192x192.png",
-                    "sizes": "192x192",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                },
-                {
-                    "src": "launchericon-512x512.png",
-                    "sizes": "512x512",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                }
-            ]
-        };
-        const stringManifest = JSON.stringify(manifest);
-        const blob = new Blob([stringManifest], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blob);
-        const link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestURL;
-        document.head.appendChild(link);
-    </script>
+    <link rel="apple-touch-icon" href="./launchericon-192x192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -90,7 +58,7 @@
                     <span class="text-xs text-purple-300 font-semibold uppercase tracking-wider">Automated Intelligence</span>
                 </div>
                 <h1 class="text-3xl font-black mt-1 tracking-tight">Sobra Livre Real</h1>
-                <p class="text-3xl font-extrabold text-emerald-400 mt-1" id="header-sobra-livre">R$ 548,32</p>
+                <p class="text-3xl font-extrabold text-emerald-400 mt-1" id="header-sobra-livre">R$ 508,32</p>
             </div>
             <div class="flex space-x-3">
                 <button onclick="carregarCenarioPadrao()" class="bg-purple-950/80 border border-purple-500/50 hover:bg-purple-900 text-purple-200 text-xs font-bold px-3 py-2 rounded-xl transition shadow-lg">
@@ -118,7 +86,7 @@
             <div class="neo-card p-6 border-l-4 border-brand">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-xs font-black text-brand uppercase tracking-wider" id="dica-categoria">ADAM SMITH • PARCIMÔNIA</span>
-                    <span class="text-xs text-zinc-500 font-bold" id="dica-contador">[1 de 10]</span>
+                    <span class="text-xs text-zinc-500 font-bold" id="dica-contador">[1 de 6]</span>
                 </div>
                 <h3 class="text-lg font-black text-white mb-2" id="dica-titulo">A Parcimônia e o Capital</h3>
                 <p class="text-sm text-zinc-300 leading-relaxed mb-4" id="dica-texto">O capital não aumenta pelo trabalho, mas pela parcimônia. Sem economia, a riqueza gerada evapora.</p>
@@ -345,23 +313,11 @@
     </div>
 
     <script>
-        // Registro automático de Service Worker para PWA Offline via Blob
+        // Registro automático de Service Worker para PWA Offline
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = 't0tal90-cache-v5';
-                    self.addEventListener('install', (e) => e.waitUntil(self.skipWaiting()));
-                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-                    self.addEventListener('fetch', (e) => {
-                        e.respondWith(
-                            fetch(e.request).catch(() => caches.match(e.request))
-                        );
-                    });
-                `;
-                const blobSW = new Blob([swCode], {type: 'text/javascript'});
-                const swUrl = URL.createObjectURL(blobSW);
-                navigator.serviceWorker.register(swUrl)
-                    .then(reg => console.log('Service Worker embutido registrado:', reg))
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado:', reg))
                     .catch(err => console.log('Erro SW:', err));
             });
         }
